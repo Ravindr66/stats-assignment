@@ -9,7 +9,7 @@ from scipy.stats import skew, kurtosis
 
 # LOADING THE DATASET
 
-df = pd.read_csv('googleplaystore.csv')
+df = pd.read_csv("googleplaystore.csv")
 print("Dataset loaded successfully")
 print("Total rows and columns:", df.shape)
 
@@ -19,19 +19,19 @@ print("Total rows and columns:", df.shape)
 df = df.drop_duplicates()
 
 # FIX THE RATING COLUMN - ONLY KEEP VALID RATINGS BETWEEN 0 AND 5
-df['Rating'] = pd.to_numeric(df['Rating'], errors='coerce')
-df = df[df['Rating'].between(0, 5)]
+df["Rating"] = pd.to_numeric(df["Rating"], errors="coerce")
+df = df[df["Rating"].between(0, 5)]
 
 # FIX THE REVIEWS COLUMN - REMOVE ANY NON-NUMBER VALUES
-df['Reviews'] = pd.to_numeric(df['Reviews'], errors='coerce')
-df = df.dropna(subset=['Reviews'])
-df['Reviews'] = df['Reviews'].astype(int)
+df["Reviews"] = pd.to_numeric(df["Reviews"], errors="coerce")
+df = df.dropna(subset=["Reviews"])
+df["Reviews"] = df["Reviews"].astype(int)
 
 # FIX THE INSTALLS COLUMN - REMOVE + AND , SYMBOLS SO WE CAN USE IT AS A NUMBER
-df['Installs'] = df['Installs'].str.replace('+', '', regex=False)
-df['Installs'] = df['Installs'].str.replace(',', '', regex=False)
-df['Installs'] = pd.to_numeric(df['Installs'], errors='coerce')
-df = df.dropna(subset=['Installs'])
+df["Installs"] = df["Installs"].str.replace("+", "", regex=False)
+df["Installs"] = df["Installs"].str.replace(",", "", regex=False)
+df["Installs"] = pd.to_numeric(df["Installs"], errors="coerce")
+df = df.dropna(subset=["Installs"])
 
 print("Data cleaned. Remaining rows:", len(df))
 
@@ -39,12 +39,12 @@ print("Data cleaned. Remaining rows:", len(df))
 # USING THE RATING COLUMN BECAUSE IT IS THE BEST MEASURE
 # OF HOW WELL AN APP IS RECEIVED BY USERS
 
-rating = df['Rating'].dropna()
+rating = df["Rating"].dropna()
 
-mean_rating     = rating.mean()
-var_rating      = rating.var()
-skew_rating     = skew(rating)
-kurt_rating     = kurtosis(rating)
+mean_rating = rating.mean()
+var_rating = rating.var()
+skew_rating = skew(rating)
+kurt_rating = kurtosis(rating)
 
 print("\n--- Four Statistical Moments for App Ratings ---")
 print(f"Mean      : {mean_rating:.4f}")
@@ -82,27 +82,26 @@ a small group of poorly rated apps exist as outliers.
 
 plt.figure(figsize=(12, 7))
 
-plt.scatter(df['Reviews'], df['Rating'],
-            alpha=0.4,
-            color='steelblue',
-            edgecolors='none',
-            s=25)
+plt.scatter(
+    df["Reviews"], df["Rating"], alpha=0.4, color="steelblue", edgecolors="none", s=25
+)
 
-plt.xscale('log')
+plt.xscale("log")
 
-plt.title('Do More Reviews Lead to Better Ratings?', 
-          fontsize=16, fontweight='bold', pad=15)
+plt.title(
+    "Do More Reviews Lead to Better Ratings?", fontsize=16, fontweight="bold", pad=15
+)
 
-plt.xlabel('Number of Reviews (Log Scale)', fontsize=14, labelpad=10)
-plt.ylabel('App Rating out of 5', fontsize=14, labelpad=10)
+plt.xlabel("Number of Reviews (Log Scale)", fontsize=14, labelpad=10)
+plt.ylabel("App Rating out of 5", fontsize=14, labelpad=10)
 
 plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)
 
-plt.grid(True, alpha=0.3, linestyle='--')
+plt.grid(True, alpha=0.3, linestyle="--")
 
 plt.tight_layout()
-plt.savefig('relational_plot.png', dpi=150)
+plt.savefig("relational_plot.png", dpi=150)
 plt.show()
 
 print("Relational plot saved")
@@ -120,35 +119,43 @@ more consistent and reliable ratings over time.
 
 plt.figure(figsize=(14, 8))
 
-category_counts = df['Category'].value_counts().head(10)
+category_counts = df["Category"].value_counts().head(10)
 
-bars = plt.bar(category_counts.index,
-               category_counts.values,
-               color='coral',
-               edgecolor='black',
-               linewidth=0.7)
+bars = plt.bar(
+    category_counts.index,
+    category_counts.values,
+    color="coral",
+    edgecolor="black",
+    linewidth=0.7,
+)
 
 # ADDING THE COUNT NUMBERS ON TOP OF EACH BAR SO THEY ARE EASY TO READ
 for bar in bars:
     height = bar.get_height()
-    plt.text(bar.get_x() + bar.get_width() / 2, height + 10,
-             str(int(height)),
-             ha='center', va='bottom',
-             fontsize=11, fontweight='bold')
+    plt.text(
+        bar.get_x() + bar.get_width() / 2,
+        height + 10,
+        str(int(height)),
+        ha="center",
+        va="bottom",
+        fontsize=11,
+        fontweight="bold",
+    )
 
-plt.title('Which App Categories Have the Most Apps?',
-          fontsize=16, fontweight='bold', pad=15)
+plt.title(
+    "Which App Categories Have the Most Apps?", fontsize=16, fontweight="bold", pad=15
+)
 
-plt.xlabel('App Category', fontsize=14, labelpad=10)
-plt.ylabel('Number of Apps', fontsize=14, labelpad=10)
+plt.xlabel("App Category", fontsize=14, labelpad=10)
+plt.ylabel("Number of Apps", fontsize=14, labelpad=10)
 
-plt.xticks(rotation=35, ha='right', fontsize=12)
+plt.xticks(rotation=35, ha="right", fontsize=12)
 plt.yticks(fontsize=12)
 
-plt.grid(axis='y', alpha=0.3, linestyle='--')
+plt.grid(axis="y", alpha=0.3, linestyle="--")
 
 plt.tight_layout()
-plt.savefig('categorical_plot.png', dpi=150)
+plt.savefig("categorical_plot.png", dpi=150)
 plt.show()
 
 print("Categorical plot saved")
@@ -168,29 +175,30 @@ large which shows how unevenly apps are spread across categories.
 
 plt.figure(figsize=(14, 8))
 
-top5 = df['Category'].value_counts().head(5).index
-df_top5 = df[df['Category'].isin(top5)]
+top5 = df["Category"].value_counts().head(5).index
+df_top5 = df[df["Category"].isin(top5)]
 
-sns.boxplot(x='Category',
-            y='Rating',
-            data=df_top5,
-            palette='coolwarm',
-            linewidth=1.5,
-            width=0.5)
+sns.boxplot(
+    x="Category", y="Rating", data=df_top5, palette="coolwarm", linewidth=1.5, width=0.5
+)
 
-plt.title('How Do Ratings Compare Across the Top 5 Categories?',
-          fontsize=16, fontweight='bold', pad=15)
+plt.title(
+    "How Do Ratings Compare Across the Top 5 Categories?",
+    fontsize=16,
+    fontweight="bold",
+    pad=15,
+)
 
-plt.xlabel('App Category', fontsize=14, labelpad=10)
-plt.ylabel('App Rating out of 5', fontsize=14, labelpad=10)
+plt.xlabel("App Category", fontsize=14, labelpad=10)
+plt.ylabel("App Rating out of 5", fontsize=14, labelpad=10)
 
-plt.xticks(rotation=20, ha='right', fontsize=12)
+plt.xticks(rotation=20, ha="right", fontsize=12)
 plt.yticks(fontsize=12)
 
-plt.grid(axis='y', alpha=0.3, linestyle='--')
+plt.grid(axis="y", alpha=0.3, linestyle="--")
 
 plt.tight_layout()
-plt.savefig('statistical_plot.png', dpi=150)
+plt.savefig("statistical_plot.png", dpi=150)
 plt.show()
 
 print("Statistical plot saved")
