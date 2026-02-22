@@ -9,37 +9,37 @@ from scipy.stats import skew, kurtosis
 
 # LOADING THE DATASET
 
-df = pd.read_csv("googleplaystore.csv")
+DATA_SET = pd.read_csv("googleplaystore.csv")
 print("Dataset loaded successfully")
-print("Total rows and columns:", df.shape)
+print("Total rows and columns:", DATA_SET.shape)
 
 # CLEANING THE DATA BEFORE ANALYSIS
 
 # DROP DUPLICATE ROWS
-df = df.drop_duplicates()
+DATA_SET = DATA_SET.drop_duplicates()
 
 # FIX THE RATING COLUMN - ONLY KEEP VALID RATINGS BETWEEN 0 AND 5
-df["Rating"] = pd.to_numeric(df["Rating"], errors="coerce")
-df = df[df["Rating"].between(0, 5)]
+DATA_SET["Rating"] = pd.to_numeric(DATA_SET["Rating"], errors="coerce")
+DATA_SET = DATA_SET[DATA_SET["Rating"].between(0, 5)]
 
 # FIX THE REVIEWS COLUMN - REMOVE ANY NON-NUMBER VALUES
-df["Reviews"] = pd.to_numeric(df["Reviews"], errors="coerce")
-df = df.dropna(subset=["Reviews"])
-df["Reviews"] = df["Reviews"].astype(int)
+DATA_SET["Reviews"] = pd.to_numeric(DATA_SET["Reviews"], errors="coerce")
+DATA_SET = DATA_SET.dropna(subset=["Reviews"])
+DATA_SET["Reviews"] = DATA_SET["Reviews"].astype(int)
 
 # FIX THE INSTALLS COLUMN - REMOVE + AND , SYMBOLS SO WE CAN USE IT AS A NUMBER
-df["Installs"] = df["Installs"].str.replace("+", "", regex=False)
-df["Installs"] = df["Installs"].str.replace(",", "", regex=False)
-df["Installs"] = pd.to_numeric(df["Installs"], errors="coerce")
-df = df.dropna(subset=["Installs"])
+DATA_SET["Installs"] = DATA_SET["Installs"].str.replace("+", "", regex=False)
+DATA_SET["Installs"] = DATA_SET["Installs"].str.replace(",", "", regex=False)
+DATA_SET["Installs"] = pd.to_numeric(DATA_SET["Installs"], errors="coerce")
+DATA_SET = DATA_SET.dropna(subset=["Installs"])
 
-print("Data cleaned. Remaining rows:", len(df))
+print("Data cleaned. Remaining rows:", len(DATA_SET))
 
 # THE FOUR STATISTICAL MOMENTS
 # USING THE RATING COLUMN BECAUSE IT IS THE BEST MEASURE
 # OF HOW WELL AN APP IS RECEIVED BY USERS
 
-rating = df["Rating"].dropna()
+rating = DATA_SET["Rating"].dropna()
 
 mean_rating = rating.mean()
 var_rating = rating.var()
@@ -55,19 +55,19 @@ print(f"Kurtosis  : {kurt_rating:.4f}")
 # ANALYSIS AND INTERPRETATION OF THE FOUR MOMENTS
 
 print("""
-The mean rating of {:.2f} out of 5 tells us that most apps on the
+The mean rating of {:.1f} out of 5 tells us that most apps on the
 Play Store are well received by users. This is a high average which
 suggests users generally only keep and rate apps they enjoy.
 
-The variance of {:.2f} is quite low which means ratings do not
+The variance of {:.1f} is quite low which means ratings do not
 spread out much. Most apps sit between 3.5 and 5 stars which
 shows consistency across the platform.
 
-The skewness of {:.2f} is negative which means the distribution
+The skewness of {:.1f} is negative which means the distribution
 leans to the left. In simple terms, more apps have high ratings
 than low ones. Very few apps fall below 3 stars.
 
-The kurtosis of {:.2f} is high which means there are some extreme
+The kurtosis of {:.1f} is high which means there are some extreme
 values at the edges. A small number of apps have unusually low
 ratings compared to the majority of well rated apps.
 
@@ -83,13 +83,13 @@ a small group of poorly rated apps exist as outliers.
 plt.figure(figsize=(12, 7))
 
 plt.scatter(
-    df["Reviews"], df["Rating"], alpha=0.4, color="steelblue", edgecolors="none", s=25
+    DATA_SET["Reviews"], DATA_SET["Rating"], alpha=0.4, color="steelblue", edgecolors="none", s=25
 )
 
 plt.xscale("log")
 
 plt.title(
-    "Do More Reviews Lead to Better Ratings?", fontsize=16, fontweight="bold", pad=15
+    "RELATIONSHIP BETWEEN REVIEWS AND RATINGS", fontsize=16, fontweight="bold", pad=15
 )
 
 plt.xlabel("Number of Reviews (Log Scale)", fontsize=14, labelpad=10)
@@ -119,7 +119,7 @@ more consistent and reliable ratings over time.
 
 plt.figure(figsize=(14, 8))
 
-category_counts = df["Category"].value_counts().head(10)
+category_counts = DATA_SET["Category"].value_counts().head(10)
 
 bars = plt.bar(
     category_counts.index,
@@ -175,15 +175,15 @@ large which shows how unevenly apps are spread across categories.
 
 plt.figure(figsize=(14, 8))
 
-top5 = df["Category"].value_counts().head(5).index
-df_top5 = df[df["Category"].isin(top5)]
+top5 = DATA_SET["Category"].value_counts().head(5).index
+DATA_SET_top5 = DATA_SET[DATA_SET["Category"].isin(top5)]
 
 sns.boxplot(
-    x="Category", y="Rating", data=df_top5, palette="coolwarm", linewidth=1.5, width=0.5
+    x="Category", y="Rating", data=DATA_SET_top5, palette="coolwarm", linewidth=1.5, width=0.5
 )
 
 plt.title(
-    "How Do Ratings Compare Across the Top 5 Categories?",
+    " Ratings Comparisson Of the Top 5 Categories?",
     fontsize=16,
     fontweight="bold",
     pad=15,
@@ -213,24 +213,3 @@ in the same category. This matches what the kurtosis value
 told us earlier about extreme values existing in the data.
 """)
 
-# FINAL SUMMARY
-
-print("""
-=== OVERALL CONCLUSION ===
-
-This analysis of the Google Play Store dataset reveals that
-the platform is dominated by high quality apps with an average
-rating of 4.19 out of 5. The low variance shows ratings are
-consistent and the negative skewness confirms that most apps
-lean towards high ratings.
-
-Family and Game categories are the most crowded with apps
-making them the hardest to stand out in. Meanwhile the box
-plot shows that even within these popular categories ratings
-stay consistently high above 4.0.
-
-The relational plot connects everything together by showing
-that apps which attract more reviews also tend to have more
-stable ratings. This suggests that building a loyal user base
-is key to maintaining a good reputation on the Play Store.
-""")
